@@ -43,4 +43,20 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
         }
     }
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.gameObject.tag == "enemy")
+        {
+
+        }
+        else if (collider.gameObject.tag == "food")
+        {
+
+        }
+        else if (collider.gameObject.tag == "golden")
+        {
+
+        }
+    }
 }
