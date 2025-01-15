@@ -1,4 +1,9 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
+
+
 
 public enum GameState
 {
@@ -12,11 +17,18 @@ public class GameManager : MonoBehaviour
 
     public GameState State = GameState.Intro;
 
+    public float PlayStartTime;
+
+    public int Lives = 3;
+
     [Header("References")]
     public GameObject IntroUI;
+    public GameObject DeadUI;
     public GameObject EnemySpawner;
     public GameObject FoodSpawner;
     public GameObject GoldenSpawner;
+    public Player PlayerScript;
+    public TMP_Text scoreText;
 
 
 
@@ -34,9 +46,39 @@ public class GameManager : MonoBehaviour
 
     }
 
+    float CalculateScore()
+    {
+        return Time.time - PlayStartTime;
+    }
+
+    void SaveHighScore()
+    {
+        int score = Mathf.FloorToInt(CalculateScore());
+        int currentHighScore = PlayerPrefs.GetInt("highScore");
+        if (score > currentHighScore)
+        {
+            PlayerPrefs.SetInt("highScore", score);
+            PlayerPrefs.Save();
+        }
+    }
+
+    int GetHighScore()
+    {
+        return PlayerPrefs.GetInt("highScore");
+    }
+
     // Update is called once per frame
     void Update()
     {
+        if (State == GameState.Playing)
+        {
+            scoreText.text = "Score: " + Mathf.FloorToInt(CalculateScore());
+        }
+        else if (State == GameState.Dead)
+        {
+            SaveHighScore();
+            scoreText.text = "High Score: " + GetHighScore();
+        }
         if (State == GameState.Intro && Input.GetKeyDown(KeyCode.Space))
         {
             State = GameState.Playing;
@@ -44,7 +86,21 @@ public class GameManager : MonoBehaviour
             EnemySpawner.SetActive(true);
             FoodSpawner.SetActive(true);
             GoldenSpawner.SetActive(true);
+            PlayStartTime = Time.time;
 
+        }
+        if (State == GameState.Playing && Lives == 0)
+        {
+            PlayerScript.KillPlayer();
+            EnemySpawner.SetActive(false);
+            FoodSpawner.SetActive(false);
+            GoldenSpawner.SetActive(false);
+            DeadUI.SetActive(true);
+            State = GameState.Dead;
+        }
+        if (State == GameState.Dead && Input.GetKeyDown(KeyCode.Space))
+        {
+            SceneManager.LoadScene("main");
         }
     }
 }

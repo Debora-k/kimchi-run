@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class Player : MonoBehaviour
 {
     [Header("Settings")]
     public float JumpForce;
@@ -15,8 +15,6 @@ public class NewMonoBehaviourScript : MonoBehaviour
     //if the player is on the ground 
     private bool isGrouneded = true;
 
-    //given lives is 3 to a player
-    public int lives = 3;
     public bool isInvincible = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -37,7 +35,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
         }
     }
 
-    void KillPlayer()
+    public void KillPlayer()
     {
         PlayerCollider.enabled = false;
         PlayerAnimator.enabled = false;
@@ -45,17 +43,13 @@ public class NewMonoBehaviourScript : MonoBehaviour
     }
     void Hit()
     {
-        lives -= 1;
-        if (lives == 0)
-        {
-            KillPlayer();
-        }
+        GameManager.Instance.Lives -= 1;
 
     }
 
     void Heal()
     {
-        lives = Mathf.Min(3, lives + 1);
+        GameManager.Instance.Lives = Mathf.Min(3, GameManager.Instance.Lives + 1);
     }
 
     void StartInvincible()
